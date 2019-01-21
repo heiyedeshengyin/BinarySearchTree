@@ -1,4 +1,6 @@
 # BinarySearchTree
+其它数据结构:[二叉树](https://github.com/heiyedeshengyin/BinaryTree) [链表](https://github.com/heiyedeshengyin/LinkedList) [双链表](https://github.com/heiyedeshengyin/DoublyLinkedList)
+
 二叉树以及二叉排序树的实现  
 这是我们学校数据结构试验的内容
 
