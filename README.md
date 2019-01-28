@@ -1,41 +1,98 @@
 # BinarySearchTree
 其它数据结构:[二叉树](https://github.com/heiyedeshengyin/BinaryTree) [链表](https://github.com/heiyedeshengyin/LinkedList) [双链表](https://github.com/heiyedeshengyin/DoublyLinkedList)
 
-二叉树以及二叉排序树的实现  
+二叉搜索树的实现  
+注意二叉搜索树中只能存储重载了>,<,==,>=,<=,!=这些运算符的对象  
 这是我们学校数据结构试验的内容
 
 ### 使用方法
-下载解压后直接编译运行src/BinarySearchTree.cpp  
-注意里面的主函数仅供参考  
-你可以编写自己的主函数  
-### 二叉树结点的数据结构
+下载解压后打开src/BinarySearchTree.cpp    
+在后面编写自己的主函数后编译运行
+### 数据结构
+二叉搜索树结点
 ```cpp
-typedef struct BiTNode	//结点
+template <typename T>
+struct TreeNode
 {
-	int data;	//结点中储存的值
-	struct BiTNode *lchild;	//结点的左孩子
-	struct BiTNode *rchild;	//结点的右孩子
-	BiTNode(const int x)
+	T data;	//结点中存储的数据
+	TreeNode<T> *left;	//结点的左孩子
+	TreeNode<T> *right;	//结点的右孩子
+	//结点的构造函数
+	TreeNode(T x)
 	{
 		data = x;
-		lchild = NULL;
-		rchild = NULL;
+		left = nullptr;
+		right = nullptr;
 	}
-}*BiTree;	//结点的指针
+};
+```
+二叉搜索树
+```cpp
+template <typename T>
+class BinarySearchTree
+{
+	TreeNode<T> *root;	//根结点
+}
 ```
 ### 函数列表
-void _BiTree(BiTree &root, int flag);	//类似于构造函数  
-void creat_BiTree(BiTree &root);	//创建一个二叉树  
-void _Per(BiTree &root, vector<int> &V);	//先序遍历的迭代  
-vector<int> PerOrderTraverse(BiTree &root);	//先序遍历  
-void _In(BiTree &root, vector<int> &V);	//中序遍历的迭代  
-vector<int> InOrderTraverse(BiTree &root);	//中序遍历  
-void _Post(BiTree &root, vector<int> &V);	//后序遍历的迭代  
-vector<int> PostOrderTraverse(BiTree &root);	//后序遍历  
-vector<vector<int>> LevelOrderTraverse(BiTree &root);	//层序遍历  
-int maxDepth(BiTree &root);	//二叉树的最大深度  
-bool isBST(BiTree &root, long min, long max);	//判断二叉树是否为二叉排序树的迭代  
-bool isValidBST(BiTree &root);	//判断二叉树是否为二叉排序树  
-BiTree searchBST(BiTree &root, int val);	//二叉排序树的搜索操作  
-BiTree insertIntoBST(BiTree &root, int val);	//二叉排序树的插入操作  
-BiTree deleteNode(BiTree &root, int key);	//二叉排序树的删除操作  
+BinarySearchTree();	//无参构造函数  
+BinarySearchTree(T x);	//创建一个根结点  
+BinarySearchTree(TreeNode<T>* _root);	//用一个已有的根结点赋值给根结点  
+BinarySearchTree(BinarySearchTree<T> &_root);	//拷贝构造函数  
+BinarySearchTree(vector<T> v);	//用一个数组来创建二叉搜索树  
+~BinarySearchTree();	//析构函数  
+vector<T> PerOrderTraverse();	//先序遍历  
+vector<T> InOrderTraverse();	//中序遍历  
+vector<T> PostOrderTraverse();	//后序遍历  
+vector<T> LevelOrderTraverse();	//层序遍历  
+int height();	//获取树的高度  
+int size();	//获取元素个数  
+TreeNode<T>* search(T e);	//搜索结点  
+bool insert(T e);	//插入节点  
+bool remove(T e);	//删除结点  
+
+### 一个主函数的例子
+```cpp
+#include"BinarySearchTree.cpp"
+
+int main()
+{
+	BinarySearchTree<int> bst1(142);
+	bst1.insert(124);
+	bst1.insert(235);
+	bst1.insert(12456);
+	bst1.insert(6224);
+	bst1.insert(12);
+
+	cout << bst1 << endl;
+	cout << bst1.size() << endl;
+	cout << bst1.height() << endl;
+
+	cout << bst1.insert(6224) << endl;
+	cout << bst1 << endl;
+	cout << bst1.size() << endl;
+	cout << bst1.height() << endl;
+
+	BinarySearchTree<int> bst2(bst1.search(235));
+	cout << bst2 << endl;
+	cout << bst2.size() << endl;
+	cout << bst2.height() << endl;
+
+	vector<int> v;
+	v.push_back(123);
+	v.push_back(12415);
+	v.push_back(8325);
+	v.push_back(124);
+	BinarySearchTree<int> bst3(v);
+	cout << bst3 << endl;
+	cout << bst3.size() << endl;
+	cout << bst3.height() << endl;
+
+	BinarySearchTree<int> bst4(bst3);
+	cout << bst4 << endl;
+	cout << bst4.size() << endl;
+	cout << bst4.height() << endl;
+
+	return 0;
+}
+```
