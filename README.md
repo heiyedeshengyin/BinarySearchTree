@@ -37,9 +37,9 @@ class BinarySearchTree
 ### 函数列表
 BinarySearchTree();	//无参构造函数  
 BinarySearchTree(T x);	//创建一个根结点  
-BinarySearchTree(TreeNode<T>* _root);	//用一个已有的根结点赋值给根结点  
-BinarySearchTree(BinarySearchTree<T> &_root);	//拷贝构造函数  
-BinarySearchTree(vector<T> v);	//用一个数组来创建二叉搜索树  
+BinarySearchTree(TreeNode\<T\>* _root);	//用一个已有的根结点赋值给根结点  
+BinarySearchTree(BinarySearchTree\<T\> &_root);	//拷贝构造函数  
+BinarySearchTree(vector\<T\> v);	//用一个数组来创建二叉搜索树  
 ~BinarySearchTree();	//析构函数  
 vector<T> PerOrderTraverse();	//先序遍历  
 vector<T> InOrderTraverse();	//中序遍历  
