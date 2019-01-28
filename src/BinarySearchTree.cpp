@@ -1,4 +1,4 @@
-/*	Copyright 2018 heiyedeshengyin All Rights Reserved.
+/*	Copyright 2019 heiyedeshengyin All Rights Reserved.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -13,457 +13,511 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-#include<iostream>
-#include<vector>
-#include<queue>
-#include<algorithm>
+#ifndef BINARYSEARCHTREE
+#define BINARYSEARCHTREE
+#include <iostream>
+#include <vector>
+#include <queue>
+#include <algorithm>
 using namespace std;
 
-//===============数据结构===============
-typedef struct BiTNode	//结点
+//===========二叉搜索树的结点===========
+template <typename T>
+struct TreeNode
 {
-	int data;	//结点中储存的值
-	struct BiTNode *lchild;	//结点的左孩子
-	struct BiTNode *rchild;	//结点的右孩子
-	BiTNode(const int x)
+	T data;	//结点中存储的数据
+	TreeNode<T> *left;	//结点的左孩子
+	TreeNode<T> *right;	//结点的右孩子
+	//结点的构造函数
+	TreeNode(T x)
 	{
 		data = x;
-		lchild = NULL;
-		rchild = NULL;
+		left = nullptr;
+		right = nullptr;
 	}
-}*BiTree;	//结点的指针
+};
 
-//===============函数列表===============
-
-void _BiTree(BiTree &root, int flag);	//类似于构造函数
-void creat_BiTree(BiTree &root);	//创建一个二叉树
-void _Per(BiTree &root, vector<int> &V);	//先序遍历的迭代
-vector<int> PerOrderTraverse(BiTree &root);	//先序遍历
-void _In(BiTree &root, vector<int> &V);	//中序遍历的迭代
-vector<int> InOrderTraverse(BiTree &root);	//中序遍历
-void _Post(BiTree &root, vector<int> &V);	//后序遍历的迭代
-vector<int> PostOrderTraverse(BiTree &root);	//后序遍历
-vector<vector<int>> LevelOrderTraverse(BiTree &root);	//层序遍历
-int maxDepth(BiTree &root);	//二叉树的最大深度
-bool isBST(BiTree &root, long min, long max);	//判断二叉树是否为二叉排序树的迭代
-bool isValidBST(BiTree &root);	//判断二叉树是否为二叉排序树
-BiTree searchBST(BiTree &root, int val);	//二叉排序树的搜索操作
-BiTree insertIntoBST(BiTree &root, int val);	//二叉排序树的插入操作
-BiTree deleteNode(BiTree &root, int key);	//二叉排序树的删除操作
-
-//===============函数的实现===============
-/*
-	创建一个根结点
-	只针对未初始化的结点
-	BiTree &root:未初始化的结点
-	int flag:若为1,则初始化结点;若为其它值,则直接赋值NULL
-
-	@Return void
-*/
-void _BiTree(BiTree &root, int flag)
+//===========二叉搜索树===========
+template <typename T>
+class BinarySearchTree
 {
-	if (flag == 1)
+private:
+	TreeNode<T> *root;	//根结点
+public:
+	BinarySearchTree();	//无参构造函数
+	BinarySearchTree(T x);	//创建一个根结点
+	BinarySearchTree(TreeNode<T>* _root);	//用一个已有的根结点赋值给根结点
+	BinarySearchTree(BinarySearchTree<T> &_root);	//拷贝构造函数
+	BinarySearchTree(vector<T> v);	//用一个数组来创建二叉搜索树
+	~BinarySearchTree();	//析构函数
+	vector<T> PerOrderTraverse();	//先序遍历
+	vector<T> InOrderTraverse();	//中序遍历
+	vector<T> PostOrderTraverse();	//后序遍历
+	vector<T> LevelOrderTraverse();	//层序遍历
+	int height();	//获取树的高度
+	int size();	//获取元素个数
+	TreeNode<T>* search(T e);	//搜索结点
+	bool insert(T e);	//插入节点
+	bool remove(T e);	//删除结点
+};
+
+//===========函数的具体实现===========
+/*
+	无参构造函数
+*/
+template <typename T>
+BinarySearchTree<T>::BinarySearchTree()
+{
+	root = nullptr;
+}
+
+//------------------------------------------------------
+/*
+	有参构造函数
+	T x:二叉树根结点的值
+*/
+template <typename T>
+BinarySearchTree<T>::BinarySearchTree(T x)
+{
+	root = new TreeNode<T>(x);
+}
+
+//------------------------------------------------------
+/*
+	复制一个二叉树到新的内存中
+	TreeNode<T>* &_root:被复制的根结点
+
+	@Return TreeNode<T>*
+*/
+template <typename T>
+TreeNode<T>* copyBitree(TreeNode<T>* &_root)
+{
+	if (_root)
 	{
-		int a;
-		cout << "请输入根结点的值:";
-		cin >> a;
-		root = new BiTNode(a);
-		cout << endl;
+		TreeNode<T>* another_root;
+		another_root = new TreeNode<T>(_root->data);
+		if (_root->left)
+			another_root->left = copyBitree(_root->left);
+		if (_root->right)
+			another_root->right = copyBitree(_root->right);
+
+		return another_root;
 	}
 	else
-		root = NULL;
+		return nullptr;
 }
 
+//------------------------------------------------------
 /*
-	创建一个二叉树
-	注意根结点要初始化
-	BiTree &root:已经初始化的根结点
+	用一个已有的根结点赋值给根结点
+	TreeNode<T>* _root:已有的根结点
+*/
+template <typename T>
+BinarySearchTree<T>::BinarySearchTree(TreeNode<T>* _root)
+{
+	root = copyBitree(_root);
+}
+
+//------------------------------------------------------
+/*
+	拷贝构造函数
+	BinarySearchTree<T> &_root:被拷贝的二叉搜索树
+*/
+template <typename T>
+BinarySearchTree<T>::BinarySearchTree(BinarySearchTree<T> &_root)
+{
+	root = copyBitree(_root.root);
+}
+
+//------------------------------------------------------
+/*
+	用一个数组来创建二叉搜索树
+	vector<T> v:用来创建二叉搜索树的数组
+*/
+template <typename T>
+BinarySearchTree<T>::BinarySearchTree(vector<T> v)
+{
+	root = new TreeNode<T>(v.front());
+	for (unsigned int i = 1; i < v.size(); i++)
+		insert(v[i]);
+}
+
+//------------------------------------------------------
+/*
+	销毁一个二叉树
+	TreeNode<T>* &root:二叉树的根结点
 
 	@Return void
 */
-void creat_BiTree(BiTree &root)
+template <typename T>
+void distoryBiTree(TreeNode<T>* &root)
 {
 	if (root)
 	{
-		cout << "是否创建" << root->data << "结点的左结点(1为是 0为否):";
-		int al;
-		cin >> al;
-		cout << endl;
-		if (al == 1)
-		{
-			int a;
-			BiTree Node;
-			cout << "请输入" << root->data << "结点的左结点的值:";
-			cin >> a;
-			cout << endl;
-			Node = new BiTNode(a);
-			root->lchild = Node;
-			creat_BiTree(root->lchild);
-		}
-
-		cout << "是否创建" << root->data << "结点的右结点(1为是 0为否):";
-		int ar;
-		cin >> ar;
-		cout << endl;
-		if (ar == 1)
-		{
-			int a;
-			BiTree Node;
-			cout << "请输入" << root->data << "结点的右结点的值:";
-			cin >> a;
-			cout << endl;
-			Node = new BiTNode(a);
-			root->rchild = Node;
-			creat_BiTree(root->rchild);
-		}
+		TreeNode<T> *left;
+		TreeNode<T> *right;
+		left = root->left;
+		right = root->right;
+		delete root;
+		root = nullptr;
+		if (left)
+			distoryBiTree(left);
+		if (right)
+			distoryBiTree(right);
 	}
-	else
-		cout << "根结点未初始化!" << endl;
 }
 
+//------------------------------------------------------
 /*
-	先序遍历的迭代部分
-	BiTree &root:二叉树的根结点
-	vector<int> &V:存储先序遍历结果的数组
+	析构函数
+*/
+template <typename T>
+BinarySearchTree<T>::~BinarySearchTree()
+{
+	distoryBiTree(root);
+}
+
+//------------------------------------------------------
+/*
+	先序遍历
+	TreeNode<T>* &root:二叉树的根结点
+	vector<T> &v:存储遍历结果的数组
 
 	@Return void
 */
-void _Per(BiTree &root, vector<int> &V)
+template <typename T>
+void Per(TreeNode<T>* &root, vector<T> &v)
 {
 	if (root)
 	{
-		V.push_back(root->data);
-		_Per(root->lchild, V);
-		_Per(root->rchild, V);
+		v.push_back(root->data);
+		Per(root->left, v);
+		Per(root->right, v);
 	}
 }
 
+//------------------------------------------------------
 /*
-	二叉树的先序遍历
-	相当于_Per函数的封装
-	BiTree &root:二叉树的根结点
+	先序遍历,并把遍历结果返回到一个数组上
 
-	@Return vector<int>
+	@Return vector<T>
 */
-vector<int> PerOrderTraverse(BiTree &root)
+template <typename T>
+vector<T> BinarySearchTree<T>::PerOrderTraverse()
 {
-	vector<int> vs;
-	_Per(root, vs);
-	return vs;
+	vector<T> v;
+	Per(root, v);
+	return v;
 }
 
+//------------------------------------------------------
 /*
-	中序遍历的迭代部分
-	BiTree &root:二叉树的根结点
-	vector<int> &V:存储中序遍历结果的数组
+	中序遍历
+	TreeNode<T>* &root:二叉树的根结点
+	vector<T> &v:存储遍历结果的数组
 
 	@Return void
 */
-void _In(BiTree &root, vector<int> &V)
+template <typename T>
+void In(TreeNode<T>* &root, vector<T> &v)
 {
 	if (root)
 	{
-		_In(root->lchild, V);
-		V.push_back(root->data);
-		_In(root->rchild, V);
+		In(root->left, v);
+		v.push_back(root->data);
+		In(root->right, v);
 	}
 }
 
+//------------------------------------------------------
 /*
-	二叉树的中序遍历
-	相当于_In函数的封装
-	BiTree &root:二叉树的根结点
+	中序遍历,并把遍历结果返回到一个数组上
 
-	@Return vector<int>
+	@Return vector<T>
 */
-vector<int> InOrderTraverse(BiTree &root)
+template <typename T>
+vector<T> BinarySearchTree<T>::InOrderTraverse()
 {
-	vector<int> vs;
-	_In(root, vs);
-	return vs;
+	vector<T> v;
+	In(root, v);
+	return v;
 }
 
+//------------------------------------------------------
 /*
-	后序遍历的迭代部分
-	BiTree &root:二叉树的根结点
-	vector<int> &V:存储后序遍历结果的数组
+	后序遍历
+	TreeNode<T>* &root:二叉树的根结点
+	vector<T> &v:存储遍历结果的数组
 
 	@Return void
 */
-void _Post(BiTree &root, vector<int> &V)
+template <typename T>
+void Post(TreeNode<T>* &root, vector<T> &v)
 {
 	if (root)
 	{
-		_Post(root->lchild, V);
-		_Post(root->rchild, V);
-		V.push_back(root->data);
+		Post(root->left, v);
+		Post(root->right, v);
+		v.push_back(root->data);
 	}
 }
 
+//------------------------------------------------------
 /*
-	二叉树的后序遍历
-	相当于_Post函数的封装
-	BiTree &root:二叉树的根结点
+	后序遍历,并把遍历结果返回到一个数组上
 
-	@Return vector<int>
+	@Return vector<T>
 */
-vector<int> PostOrderTraverse(BiTree &root)
+template <typename T>
+vector<T> BinarySearchTree<T>::PostOrderTraverse()
 {
-	vector<int> vs;
-	_Post(root, vs);
-	return vs;
+	vector<T> v;
+	Post(root, v);
+	return v;
 }
 
+//------------------------------------------------------
 /*
-	二叉树的层序遍历
-	遍历的结果返回到一个二维数组中
-	BiTree &root:二叉树的根结点
+	层序遍历,并把遍历结果返回到一个数组上
 
-	@Return vector<vector<int>>
+	@Return vector<T>
 */
-vector<vector<int>> LevelOrderTraverse(BiTree &root)
+template <typename T>
+vector<T> BinarySearchTree<T>::LevelOrderTraverse()
 {
-	vector<vector<int>> res;
+	vector<T> v;
 	if (!root)
-		return res;
+		return v;
 
-	queue<BiTree> q;
+	queue<TreeNode<T>*> q;
 	q.push(root);
-	BiTree last = root;
-	vector<int> a;
 	while (!q.empty())
 	{
-		BiTree tmp = q.front();
+		TreeNode<T>* Node;
+		Node = q.front();
+		v.push_back(Node->data);
 		q.pop();
-		if (tmp->lchild)
-			q.push(tmp->lchild);
-		if (tmp->rchild)
-			q.push(tmp->rchild);
-		if (tmp == last)
-		{
-			a.push_back(tmp->data);
-			res.push_back(a);
-			a.clear();
-			last = q.back();
-		}
-		else
-			a.push_back(tmp->data);
+		if (Node->left)
+			q.push(Node->left);
+		if (Node->right)
+			q.push(Node->right);
 	}
-	return res;
+	return v;
 }
 
+//------------------------------------------------------
 /*
-	返回二叉树的最大深度
-	BiTree &root:二叉树的根结点
+	返回二叉树的高度
+	TreeNode<T>* &root:二叉树的根结点
 
 	@Return int
 */
-int maxDepth(BiTree &root)
+template <typename T>
+int getHeight(TreeNode<T>* &root)
 {
 	if (root)
-		return 1 + max(maxDepth(root->lchild), maxDepth(root->rchild));
+		return 1 + max(getHeight(root->left), getHeight(root->right));
 	else
 		return 0;
 }
 
+//------------------------------------------------------
 /*
-	判断二叉树是否为二叉排序树的迭代部分
-	BiTree &root:二叉树的根结点
-	long min:结点中的值不能低于的值
-	long max:结点中的值不能高于的值
+	返回二叉树的高度
 
-	@Return bool
+	@Return int
 */
-bool isBST(BiTree &root, long min, long max)
+template <typename T>
+int BinarySearchTree<T>::height()
 {
-	if (!root)
-		return true;
-	if ((root->data) <= min || (root->data) >= max)
-		return false;
-	return isBST(root->lchild, min, root->data) && isBST(root->rchild, root->data, max);
+	return getHeight(root);
 }
 
+//------------------------------------------------------
 /*
-	判断二叉树是否为二叉排序树
-	相当于isBST函数的封装
-	BiTree &root:二叉树的根结点
+	返回二叉树中结点的个数
+	TreeNode<T>* &root:二叉树的根结点
 
-	@Return bool
+	@Return int
 */
-bool isValidBST(BiTree &root)
+template <typename T>
+int getSize(TreeNode<T>* &root)
 {
-	if (!root)
-		return true;
-	long min = LONG_MIN;
-	long max = LONG_MAX;
-	return isBST(root, min, max);
-}
-
-/*
-	二叉排序树的搜索操作
-	BiTree &root:二叉排序树的根结点
-	int val:要搜索的值
-
-	@Return BiTree
-*/
-BiTree searchBST(BiTree &root, int val)
-{
-	if (isValidBST(root))
-	{
-		if (!root)
-			return NULL;
-		if (root->data == val)
-			return root;
-
-		if (root->data > val)
-			return searchBST(root->lchild, val);
-		else
-			return searchBST(root->rchild, val);
-	}
+	if (root)
+		return 1 + getSize(root->left) + getSize(root->right);
 	else
-	{
-		cout << "传入的不是二叉排序树!" << endl;
-		return NULL;
-	}
+		return 0;
 }
 
+//------------------------------------------------------
 /*
-	二叉排序树的插入操作
-	BiTree &root:二叉排序树的根结点
-	int val:要插入的值
+	返回二叉树中结点的个数
 
-	@Return BiTree
+	@Return int
 */
-BiTree insertIntoBST(BiTree &root, int val)
+template <typename T>
+int BinarySearchTree<T>::size()
 {
-	if (isValidBST(root))
-	{
-		if (!root)
-			return new BiTNode(val);
+	return getSize(root);
+}
 
-		if (root->data > val)
-			root->lchild = insertIntoBST(root->lchild, val);
-		else
-			root->rchild = insertIntoBST(root->rchild, val);
+//------------------------------------------------------
+/*
+	搜索结点,若找到就返回该结点,若没找到就返回nullptr
+	TreeNode<T>* &root:二叉搜索树的根结点
+	T val:要搜索的值
 
+	@Return TreeNode<T>*
+*/
+template <typename T>
+TreeNode<T>* searchIn(TreeNode<T>* &root, T val)
+{
+	if (root == nullptr)
+		return nullptr;
+
+	if (root->data == val)
 		return root;
-	}
 	else
-	{
-		cout << "传入的不是二叉排序树!" << endl;
-		return NULL;
-	}
+		if (root->data > val)
+			return searchIn(root->left, val);
+		else
+			return searchIn(root->right, val);
 }
 
+//------------------------------------------------------
 /*
-	二叉排序树的删除操作
-	BiTree &root:二叉排序树的根结点
-	int val:要删除的值
+	搜索结点,若找到就返回该结点,若没找到就返回nullptr
+	T e:要搜索的值
 
-	@Return BiTree
+	@Return TreeNode<T>*
 */
-BiTree deleteNode(BiTree &root, int key)
+template <typename T>
+TreeNode<T>* BinarySearchTree<T>::search(T e)
 {
-	if (isValidBST(root))
+	return searchIn(root, e);
+}
+
+//------------------------------------------------------
+/*
+	插入结点,并返回插入后的根结点
+	TreeNode<T>* &root:二叉搜索树的根结点
+	T val:要插入的值
+
+	@Return TreeNode<T>*
+*/
+template <typename T>
+TreeNode<T>* insertIn(TreeNode<T>* &root, T val)
+{
+	if (root == nullptr)
+		return new TreeNode<T>(val);
+
+	if (root->data > val)
+		root->left = insertIn(root->left, val);
+	else if (root->data < val)
+		root->right = insertIn(root->right, val);
+
+	return root;
+}
+
+//------------------------------------------------------
+/*
+	插入结点,若插入成功则返回true,失败则返回false
+	T e:要插入的值
+
+	@Return bool
+*/
+template <typename T>
+bool BinarySearchTree<T>::insert(T e)
+{
+	if (search(e))
+		return false;
+
+	insertIn(root, e);
+	return true;
+}
+
+//------------------------------------------------------
+/*
+	删除结点,并返回删除后的根结点
+	TreeNode<T>* &root:二叉搜索树的根结点
+	T val:要删除的值
+
+	@Return TreeNode<T>*
+*/
+template <typename T>
+TreeNode<T>* removeAt(TreeNode<T>* &root, T val)
+{
+	if (root == nullptr)
+		return nullptr;
+
+	if (root->data > val)
+		root->left = removeAt(root->left, val);
+	else if (root->data < val)
+		root->right = removeAt(root->right, val);
+	else
 	{
-		if (!root)
-			return NULL;
-		if (root->data > key)
-			root->lchild = deleteNode(root->lchild, key);
-		else if (root->data < key)
-			root->rchild = deleteNode(root->rchild, key);
+		if (root->left == nullptr&&root->right == nullptr)
+			root = nullptr;
+		else if (root->left == nullptr)
+			root = root->right;
+		else if (root->right == nullptr)
+			root = root->left;
 		else
 		{
-			if (!root->lchild || !root->rchild)
-				root = (root->lchild) ? root->lchild : root->rchild;
-			else
-			{
-				BiTree cur = root->rchild;
-				while (cur->lchild)
-					cur = cur->lchild;
-				root->data = cur->data;
-				root->rchild = deleteNode(root->rchild, cur->data);
-			}
+			TreeNode<T> *minnode = root->right;
+			while (minnode->left != nullptr)
+				minnode = minnode->left;
+			root->data = minnode->data;
+			root->right = removeAt(root->right, minnode->data);
 		}
-		return root;
+	}
+	return root;
+}
+
+//------------------------------------------------------
+/*
+	删除结点,若删除成功则返回true,失败则返回false
+	T e:要删除的值
+
+	@Return bool
+*/
+template <typename T>
+bool BinarySearchTree<T>::remove(T e)
+{
+	if (!search(e))
+		return false;
+
+	removeAt(root, e);
+	return true;
+}
+
+//------------------------------------------------------
+/*
+	重载<<操作符,按中序遍历输出
+	ostream &os:输出流
+	BinarySearchTree<T> &m:要输出的二叉搜索树
+
+	@Return ostream
+*/
+template <typename T>
+ostream &operator<<(ostream &os, BinarySearchTree<T> &m)
+{
+	vector<T> v = m.InOrderTraverse();
+	if (v.size() == 0)
+		return os;
+
+	if (v.size() == 1)
+	{
+		os << v.front();
+		return os;
 	}
 	else
 	{
-		cout << "传入的不是二叉排序树!" << endl;
-		return NULL;
+		for (unsigned int i = 0; i < v.size() - 1; i++)
+			os << v[i] << " ";
+		os << v.back();
+		return os;
 	}
 }
 
-//===============主函数===============
-/*
-	主函数仅供参考
-	你可以写自己的主函数
-*/
-int main()
-{
-	BiTree T;
-	_BiTree(T, 1);
-	creat_BiTree(T);
-
-	vector<int> n;
-	n = PerOrderTraverse(T);
-	cout << n.size() << endl;
-	for (int i = 0; i < n.size(); i++)
-		cout << n[i] << " ";
-	cout << endl;
-
-	vector<int> m;
-	m = InOrderTraverse(T);
-	cout << m.size() << endl;
-	for (int i = 0; i < m.size(); i++)
-		cout << m[i] << " ";
-	cout << endl;
-
-	vector<int> l;
-	l = PostOrderTraverse(T);
-	cout << l.size() << endl;
-	for (int i = 0; i < l.size(); i++)
-		cout << l[i] << " ";
-	cout << endl;
-
-	int ser;
-	cout << "请输入要搜索的值:";
-	cin >> ser;
-	cout << endl;
-	BiTree N = searchBST(T, ser);
-
-	vector<int> ln;
-	ln = PerOrderTraverse(N);
-	cout << ln.size() << endl;
-	for (int i = 0; i < ln.size(); i++)
-		cout << ln[i] << " ";
-	cout << endl;
-
-	int insert;
-	cout << "请输入要插入的值:";
-	cin >> insert;
-	cout << endl;
-	BiTree Ln = insertIntoBST(T, insert);
-
-	vector<int> mn;
-	mn = PerOrderTraverse(Ln);
-	cout << mn.size() << endl;
-	for (int i = 0; i < mn.size(); i++)
-		cout << mn[i] << " ";
-	cout << endl;
-
-	int delet;
-	cout << "请输入要删除的值:";
-	cin >> delet;
-	cout << endl;
-	BiTree Dn = deleteNode(T, delet);
-
-	vector<int> dn;
-	dn = PerOrderTraverse(Dn);
-	cout << dn.size() << endl;
-	for (int i = 0; i < dn.size(); i++)
-		cout << dn[i] << " ";
-	cout << endl;
-
-	return 0;
-}
+#endif // !BINARYSEARCHTREE
