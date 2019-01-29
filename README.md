@@ -48,6 +48,7 @@ vector\<T\> PostOrderTraverse();	//后序遍历
 vector\<T\> LevelOrderTraverse();	//层序遍历  
 void clear();	//清空二叉树  
 bool isEmpty();	//判断二叉树是否为空  
+bool isBalanced();	//判断是否为平衡二叉树  
 int height();	//获取树的高度  
 int size();	//获取元素个数  
 TreeNode\<T\>* search(T e);	//搜索结点  
