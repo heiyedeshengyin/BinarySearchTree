@@ -54,11 +54,14 @@ public:
 	vector<T> InOrderTraverse();	//中序遍历
 	vector<T> PostOrderTraverse();	//后序遍历
 	vector<T> LevelOrderTraverse();	//层序遍历
+	void clear();	//清空二叉树
+	bool isEmpty();	//判断二叉树是否为空
 	int height();	//获取树的高度
 	int size();	//获取元素个数
 	TreeNode<T>* search(T e);	//搜索结点
 	bool insert(T e);	//插入节点
 	bool remove(T e);	//删除结点
+	T operator[] (int r);	//重载[]操作符
 };
 
 //===========函数的具体实现===========
@@ -307,6 +310,33 @@ vector<T> BinarySearchTree<T>::LevelOrderTraverse()
 
 //------------------------------------------------------
 /*
+	清空二叉树
+
+	@Return void
+*/
+template <typename T>
+void BinarySearchTree<T>::clear()
+{
+	distoryBiTree(root);
+}
+
+//------------------------------------------------------
+/*
+	判断二叉树是否为空
+
+	@Return bool
+*/
+template <typename T>
+bool BinarySearchTree<T>::isEmpty()
+{
+	if (root)
+		return true;
+	else
+		return false;
+}
+
+//------------------------------------------------------
+/*
 	返回二叉树的高度
 	TreeNode<T>* &root:二叉树的根结点
 
@@ -489,6 +519,23 @@ bool BinarySearchTree<T>::remove(T e)
 
 	removeAt(root, e);
 	return true;
+}
+
+//------------------------------------------------------
+/*
+	重载[]操作符,按中序遍历输出
+	int r:索引
+
+	@Return T
+*/
+template <typename T>
+T BinarySearchTree<T>::operator[] (int r)
+{
+	if (r < 0 || r >= size())
+		return NULL;
+	
+	vector<T> v = InOrderTraverse();
+	return v[r];
 }
 
 //------------------------------------------------------
