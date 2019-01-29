@@ -42,15 +42,18 @@ BinarySearchTree(TreeNode\<T\>* _root);	//用一个已有的根结点赋值给�
 BinarySearchTree(BinarySearchTree\<T\> &_root);	//拷贝构造函数  
 BinarySearchTree(vector\<T\> v);	//用一个数组来创建二叉搜索树  
 ~BinarySearchTree();	//析构函数  
-vector<T> PerOrderTraverse();	//先序遍历  
-vector<T> InOrderTraverse();	//中序遍历  
-vector<T> PostOrderTraverse();	//后序遍历  
-vector<T> LevelOrderTraverse();	//层序遍历  
+vector\<T\> PerOrderTraverse();	//先序遍历  
+vector\<T\> InOrderTraverse();	//中序遍历  
+vector\<T\> PostOrderTraverse();	//后序遍历  
+vector\<T\> LevelOrderTraverse();	//层序遍历  
+void clear();	//清空二叉树  
+bool isEmpty();	//判断二叉树是否为空  
 int height();	//获取树的高度  
 int size();	//获取元素个数  
-TreeNode<T>* search(T e);	//搜索结点  
+TreeNode\<T\>* search(T e);	//搜索结点  
 bool insert(T e);	//插入节点  
 bool remove(T e);	//删除结点  
+T operator[] (int r);	//重载[]操作符  
 
 ### 一个主函数的例子
 ```cpp
