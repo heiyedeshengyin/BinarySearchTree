@@ -19,6 +19,7 @@ limitations under the License.
 #include <vector>
 #include <queue>
 #include <algorithm>
+#include <cmath>
 using namespace std;
 
 //===========二叉搜索树的结点===========
@@ -56,6 +57,7 @@ public:
 	vector<T> LevelOrderTraverse();	//层序遍历
 	void clear();	//清空二叉树
 	bool isEmpty();	//判断二叉树是否为空
+	bool isBalanced();	//判断是否为平衡二叉树
 	int height();	//获取树的高度
 	int size();	//获取元素个数
 	TreeNode<T>* search(T e);	//搜索结点
@@ -337,6 +339,39 @@ bool BinarySearchTree<T>::isEmpty()
 
 //------------------------------------------------------
 /*
+	判断是否为平衡二叉树
+	TreeNode<T>* &root:二叉树的根结点
+
+	@Return bool
+*/
+template <typename T>
+bool isBalancedBiTree(TreeNode<T>* &root)
+{
+	if (!root)
+		return true;
+
+	if (!root->left && !root->right)
+		return true;
+	else if (abs(getHeight(root->left) - getHeight(root->right)) > 1)
+		return false;
+	else
+		return isBalancedBiTree(root->left) && isBalancedBiTree(root->right);
+}
+
+//------------------------------------------------------
+/*
+	判断是否为平衡二叉树
+
+	@Return bool
+*/
+template <typename T>
+bool BinarySearchTree<T>::isBalanced()
+{
+	return isBalancedBiTree(root);
+}
+
+//------------------------------------------------------
+/*
 	返回二叉树的高度
 	TreeNode<T>* &root:二叉树的根结点
 
@@ -462,7 +497,7 @@ bool BinarySearchTree<T>::insert(T e)
 	if (search(e))
 		return false;
 
-	insertIn(root, e);
+	root = insertIn(root, e);
 	return true;
 }
 
