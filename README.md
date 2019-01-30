@@ -33,7 +33,7 @@ template <typename T>
 class BinarySearchTree
 {
 	TreeNode<T> *root;	//根结点
-}
+};
 ```
 ### 函数列表
 BinarySearchTree();	//无参构造函数  
