@@ -155,7 +155,7 @@ BinarySearchTree<T>::BinarySearchTree(vector<T> v)
 	@Return void
 */
 template <typename T>
-void distoryBiTree(TreeNode<T>* &root)
+void destroyBiTree(TreeNode<T>* &root)
 {
 	if (root)
 	{
@@ -166,9 +166,9 @@ void distoryBiTree(TreeNode<T>* &root)
 		delete root;
 		root = nullptr;
 		if (left)
-			distoryBiTree(left);
+			destroyBiTree(left);
 		if (right)
-			distoryBiTree(right);
+			destroyBiTree(right);
 	}
 }
 
@@ -179,7 +179,7 @@ void distoryBiTree(TreeNode<T>* &root)
 template <typename T>
 BinarySearchTree<T>::~BinarySearchTree()
 {
-	distoryBiTree(root);
+	destroyBiTree(root);
 }
 
 //------------------------------------------------------
@@ -319,7 +319,7 @@ vector<T> BinarySearchTree<T>::LevelOrderTraverse()
 template <typename T>
 void BinarySearchTree<T>::clear()
 {
-	distoryBiTree(root);
+	destroyBiTree(root);
 }
 
 //------------------------------------------------------
